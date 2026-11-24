@@ -302,7 +302,7 @@ if vista_idx == 0:
 
     # Tabla comparativa
     st.markdown(
-        """
+        r"""
         <div class="stage-card">
             <h3 style="margin-top:0;">Matriz Comparativa de Esquemas Numéricos</h3>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:10px;">
@@ -358,61 +358,60 @@ elif vista_idx == 1:
     col_ctrl, col_plot = st.columns([1, 2.2])
 
     with col_ctrl:
-        st.markdown('<div class="stage-card">', unsafe_allow_html=True)
-        sistema_preset = st.selectbox(
-            "Sistema Lineal:",
-            [
-                "Circuito RLC Rígido (2×2, S = 1000)",
-                "Cinética Química (3×3, S = 200)",
-                "Edificio Sísmico (4×4, Modos Complejos)",
-                "Oscilador Amortiguado Rígido (2×2, S = 400)",
-                "Matriz 2×2 Personalizada",
-            ],
-        )
+        with st.container(border=True):
+            sistema_preset = st.selectbox(
+                "Sistema Lineal:",
+                [
+                    "Circuito RLC Rígido (2×2, S = 1000)",
+                    "Cinética Química (3×3, S = 200)",
+                    "Edificio Sísmico (4×4, Modos Complejos)",
+                    "Oscilador Amortiguado Rígido (2×2, S = 400)",
+                    "Matriz 2×2 Personalizada",
+                ],
+            )
 
-        if sistema_preset == "Circuito RLC Rígido (2×2, S = 1000)":
-            A_mat = np.array([[0.0, -1000.0], [1.0, -1001.0]])
-            h_def, h_min, h_max, h_step = 0.0025, 0.0005, 0.02, 0.0005
-        elif sistema_preset == "Cinética Química (3×3, S = 200)":
-            A_mat = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
-            h_def, h_min, h_max, h_step = 0.025, 0.005, 0.08, 0.002
-        elif sistema_preset == "Edificio Sísmico (4×4, Modos Complejos)":
-            A_mat = np.array([
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
-                [-200.0, 80.0, -10.0, 4.0],
-                [80.0, -80.0, 4.0, -4.0],
-            ])
-            h_def, h_min, h_max, h_step = 0.06, 0.005, 0.14, 0.002
-        elif sistema_preset == "Oscilador Amortiguado Rígido (2×2, S = 400)":
-            A_mat = np.array([[0.0, 1.0], [-400.0, -401.0]])
-            h_def, h_min, h_max, h_step = 0.01, 0.001, 0.05, 0.001
-        else:
-            c1, c2 = st.columns(2)
-            with c1:
-                a11 = st.number_input("a11", value=-50.0)
-                a21 = st.number_input("a21", value=0.0)
-            with c2:
-                a12 = st.number_input("a12", value=0.0)
-                a22 = st.number_input("a22", value=-2.0)
-            A_mat = np.array([[a11, a12], [a21, a22]])
-            h_def, h_min, h_max, h_step = 0.05, 0.002, 0.2, 0.004
+            if sistema_preset == "Circuito RLC Rígido (2×2, S = 1000)":
+                A_mat = np.array([[0.0, -1000.0], [1.0, -1001.0]])
+                h_def, h_min, h_max, h_step = 0.0025, 0.0005, 0.02, 0.0005
+            elif sistema_preset == "Cinética Química (3×3, S = 200)":
+                A_mat = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
+                h_def, h_min, h_max, h_step = 0.025, 0.005, 0.08, 0.002
+            elif sistema_preset == "Edificio Sísmico (4×4, Modos Complejos)":
+                A_mat = np.array([
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                    [-200.0, 80.0, -10.0, 4.0],
+                    [80.0, -80.0, 4.0, -4.0],
+                ])
+                h_def, h_min, h_max, h_step = 0.06, 0.005, 0.14, 0.002
+            elif sistema_preset == "Oscilador Amortiguado Rígido (2×2, S = 400)":
+                A_mat = np.array([[0.0, 1.0], [-400.0, -401.0]])
+                h_def, h_min, h_max, h_step = 0.01, 0.001, 0.05, 0.001
+            else:
+                c1, c2 = st.columns(2)
+                with c1:
+                    a11 = st.number_input("a11", value=-50.0)
+                    a21 = st.number_input("a21", value=0.0)
+                with c2:
+                    a12 = st.number_input("a12", value=0.0)
+                    a22 = st.number_input("a22", value=-2.0)
+                A_mat = np.array([[a11, a12], [a21, a22]])
+                h_def, h_min, h_max, h_step = 0.05, 0.002, 0.2, 0.004
 
-        h_val = st.slider(
-            "Paso temporal h [s]:",
-            min_value=float(h_min),
-            max_value=float(h_max),
-            value=float(h_def),
-            step=float(h_step),
-            format="%.4f",
-        )
+            h_val = st.slider(
+                "Paso temporal h [s]:",
+                min_value=float(h_min),
+                max_value=float(h_max),
+                value=float(h_def),
+                step=float(h_step),
+                format="%.4f",
+            )
 
-        info_est = analizar_estabilidad(A_mat, h_val)
-        st.markdown("**Valores propios $\\lambda_i$:**")
-        for ev in info_est["eigenvalores"]:
-            st.markdown(f"• `{ev.real:+.2f} {ev.imag:+.2f}j`")
-        st.markdown(f"**Límite Explícito:** `{info_est['h_critico_explicito']:.4f} s`")
-        st.markdown("</div>", unsafe_allow_html=True)
+            info_est = analizar_estabilidad(A_mat, h_val)
+            st.markdown("**Valores propios $\\lambda_i$:**")
+            for ev in info_est["eigenvalores"]:
+                st.markdown(f"• `{ev.real:+.2f} {ev.imag:+.2f}j`")
+            st.markdown(f"**Límite Explícito:** `{info_est['h_critico_explicito']:.4f} s`")
 
     with col_plot:
         flag_expl = "INESTABLE" if not info_est["estable_explicito"] else "ESTABLE"
@@ -536,92 +535,91 @@ elif vista_idx == 2:
     col_s1, col_s2 = st.columns([1.1, 2.2])
 
     with col_s1:
-        st.markdown('<div class="stage-card">', unsafe_allow_html=True)
-        tipo_sistema = st.selectbox(
-            "Cargar Sistema o Biblioteca:",
-            [
-                "Matriz 2×2 Personalizada",
-                "Matriz 3×3 Personalizada",
-                "Problema de Robertson Linealizado (Extremo, S = 10,000)",
-                "Problema de Prothero-Robinson (Prueba Estándar)",
-                "Oscilador Acoplado Fuertemente Amortiguado (S = 500)",
-                "Circuito RLC Rígido (S = 1000)",
-            ],
-        )
+        with st.container(border=True):
+            tipo_sistema = st.selectbox(
+                "Cargar Sistema o Biblioteca:",
+                [
+                    "Matriz 2×2 Personalizada",
+                    "Matriz 3×3 Personalizada",
+                    "Problema de Robertson Linealizado (Extremo, S = 10,000)",
+                    "Problema de Prothero-Robinson (Prueba Estándar)",
+                    "Oscilador Acoplado Fuertemente Amortiguado (S = 500)",
+                    "Circuito RLC Rígido (S = 1000)",
+                ],
+            )
 
-        if tipo_sistema == "Matriz 2×2 Personalizada":
-            n_dim = 2
-            c1, c2 = st.columns(2)
-            with c1:
-                a11 = st.number_input("A[0,0]", value=-200.0)
-                a21 = st.number_input("A[1,0]", value=1.0)
-                y0_1 = st.number_input("y0[0]", value=1.0)
-            with c2:
-                a12 = st.number_input("A[0,1]", value=0.0)
-                a22 = st.number_input("A[1,1]", value=-1.0)
-                y0_2 = st.number_input("y0[1]", value=0.5)
-            A_box = np.array([[a11, a12], [a21, a22]])
-            y0_box = np.array([y0_1, y0_2])
-            t_fin_box = st.slider("Horizonte T [s]:", min_value=0.5, max_value=10.0, value=3.0, step=0.5)
-            h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.02, step=0.001, format="%.4f")
+            if tipo_sistema == "Matriz 2×2 Personalizada":
+                n_dim = 2
+                c1, c2 = st.columns(2)
+                with c1:
+                    a11 = st.number_input("A[0,0]", value=-200.0)
+                    a21 = st.number_input("A[1,0]", value=1.0)
+                    y0_1 = st.number_input("y0[0]", value=1.0)
+                with c2:
+                    a12 = st.number_input("A[0,1]", value=0.0)
+                    a22 = st.number_input("A[1,1]", value=-1.0)
+                    y0_2 = st.number_input("y0[1]", value=0.5)
+                A_box = np.array([[a11, a12], [a21, a22]])
+                y0_box = np.array([y0_1, y0_2])
+                t_fin_box = st.slider("Horizonte T [s]:", min_value=0.5, max_value=10.0, value=3.0, step=0.5)
+                h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.02, step=0.001, format="%.4f")
 
-        elif tipo_sistema == "Matriz 3×3 Personalizada":
-            n_dim = 3
-            st.markdown("**Matriz A (3×3):**")
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                a11 = st.number_input("A[0,0]", value=-100.0)
-                a21 = st.number_input("A[1,0]", value=100.0)
-                a31 = st.number_input("A[2,0]", value=0.0)
-            with c2:
-                a12 = st.number_input("A[0,1]", value=0.0)
-                a22 = st.number_input("A[1,1]", value=-2.0)
-                a32 = st.number_input("A[2,1]", value=2.0)
-            with c3:
-                a13 = st.number_input("A[0,2]", value=0.0)
-                a23 = st.number_input("A[1,2]", value=0.0)
-                a33 = st.number_input("A[2,2]", value=-0.1)
-            A_box = np.array([[a11, a12, a13], [a21, a22, a23], [a31, a32, a33]])
-            y0_box = np.array([1.0, 0.0, 0.0])
-            t_fin_box = st.slider("Horizonte T [s]:", min_value=1.0, max_value=20.0, value=8.0, step=1.0)
-            h_box = st.slider("Paso h [s]:", min_value=0.005, max_value=0.2, value=0.05, step=0.005, format="%.3f")
+            elif tipo_sistema == "Matriz 3×3 Personalizada":
+                n_dim = 3
+                st.markdown("**Matriz A (3×3):**")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    a11 = st.number_input("A[0,0]", value=-100.0)
+                    a21 = st.number_input("A[1,0]", value=100.0)
+                    a31 = st.number_input("A[2,0]", value=0.0)
+                with c2:
+                    a12 = st.number_input("A[0,1]", value=0.0)
+                    a22 = st.number_input("A[1,1]", value=-2.0)
+                    a32 = st.number_input("A[2,1]", value=2.0)
+                with c3:
+                    a13 = st.number_input("A[0,2]", value=0.0)
+                    a23 = st.number_input("A[1,2]", value=0.0)
+                    a33 = st.number_input("A[2,2]", value=-0.1)
+                A_box = np.array([[a11, a12, a13], [a21, a22, a23], [a31, a32, a33]])
+                y0_box = np.array([1.0, 0.0, 0.0])
+                t_fin_box = st.slider("Horizonte T [s]:", min_value=1.0, max_value=20.0, value=8.0, step=1.0)
+                h_box = st.slider("Paso h [s]:", min_value=0.005, max_value=0.2, value=0.05, step=0.005, format="%.3f")
 
-        elif tipo_sistema == "Problema de Robertson Linealizado (Extremo, S = 10,000)":
-            # Cinética química de Robertson linealizada en el punto de equilibrio rápido
-            A_box = np.array([
-                [-0.04, 1e4, 0.0],
-                [0.04, -1e4, 0.0],
-                [0.0, 0.0, -1.0],
-            ])
-            y0_box = np.array([1.0, 0.0, 0.0])
-            t_fin_box = 5.0
-            h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.02, step=0.001, format="%.4f")
+            elif tipo_sistema == "Problema de Robertson Linealizado (Extremo, S = 10,000)":
+                # Cinética química de Robertson linealizada en el punto de equilibrio rápido
+                A_box = np.array([
+                    [-0.04, 1e4, 0.0],
+                    [0.04, -1e4, 0.0],
+                    [0.0, 0.0, -1.0],
+                ])
+                y0_box = np.array([1.0, 0.0, 0.0])
+                t_fin_box = 5.0
+                h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.02, step=0.001, format="%.4f")
 
-        elif tipo_sistema == "Problema de Prothero-Robinson (Prueba Estándar)":
-            lambda_pr = st.slider("Rigidez lambda:", min_value=-1000.0, max_value=-50.0, value=-500.0, step=50.0)
-            A_box = np.array([[lambda_pr, 0.0], [0.0, -1.0]])
-            y0_box = np.array([1.0, 1.0])
-            t_fin_box = 4.0
-            h_box = st.slider("Paso h [s]:", min_value=0.002, max_value=0.1, value=0.025, step=0.002, format="%.4f")
+            elif tipo_sistema == "Problema de Prothero-Robinson (Prueba Estándar)":
+                lambda_pr = st.slider("Rigidez lambda:", min_value=-1000.0, max_value=-50.0, value=-500.0, step=50.0)
+                A_box = np.array([[lambda_pr, 0.0], [0.0, -1.0]])
+                y0_box = np.array([1.0, 1.0])
+                t_fin_box = 4.0
+                h_box = st.slider("Paso h [s]:", min_value=0.002, max_value=0.1, value=0.025, step=0.002, format="%.4f")
 
-        elif tipo_sistema == "Oscilador Acoplado Fuertemente Amortiguado (S = 500)":
-            A_box = np.array([[0.0, 1.0], [-500.0, -501.0]])
-            y0_box = np.array([2.0, 0.0])
-            t_fin_box = 3.0
-            h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.08, value=0.02, step=0.001, format="%.4f")
+            elif tipo_sistema == "Oscilador Acoplado Fuertemente Amortiguado (S = 500)":
+                A_box = np.array([[0.0, 1.0], [-500.0, -501.0]])
+                y0_box = np.array([2.0, 0.0])
+                t_fin_box = 3.0
+                h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.08, value=0.02, step=0.001, format="%.4f")
 
-        else:
-            A_box = np.array([[0.0, -1000.0], [1.0, -1001.0]])
-            y0_box = np.array([10.0, 0.0])
-            t_fin_box = 3.0
-            h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.04, step=0.001, format="%.4f")
+            else:
+                A_box = np.array([[0.0, -1000.0], [1.0, -1001.0]])
+                y0_box = np.array([10.0, 0.0])
+                t_fin_box = 3.0
+                h_box = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.04, step=0.001, format="%.4f")
 
-        info_sb = analizar_estabilidad(A_box, h_box)
-        st.markdown(f"**Valores propios $\\lambda_i$:**")
-        for ev in info_sb["eigenvalores"]:
-            st.markdown(f"• `{ev.real:+.2e} {ev.imag:+.2e}j`")
-        st.markdown(f"**Paso crítico explícito:** `{info_sb['h_critico_explicito']:.4e} s`")
-        st.markdown("</div>", unsafe_allow_html=True)
+            info_sb = analizar_estabilidad(A_box, h_box)
+            st.markdown(f"**Valores propios $\\lambda_i$:**")
+            for ev in info_sb["eigenvalores"]:
+                st.markdown(f"• `{ev.real:+.2e} {ev.imag:+.2e}j`")
+            st.markdown(f"**Paso crítico explícito:** `{info_sb['h_critico_explicito']:.4e} s`")
 
     with col_s2:
         t_sb_imp, y_sb_imp = euler_implicito_lineal(A_box, y0_box, (0.0, t_fin_box), h_box)
@@ -697,47 +695,46 @@ elif vista_idx == 3:
     col_lu_ctrl, col_lu_view = st.columns([1, 2.3])
 
     with col_lu_ctrl:
-        st.markdown('<div class="stage-card">', unsafe_allow_html=True)
-        sis_lu = st.selectbox(
-            "Seleccionar Sistema:",
-            [
-                "Circuito RLC (2×2, S = 1000)",
-                "Cinética Química (3×3, S = 200)",
-                "Edificio Sísmico (4×4, Modos Complejos)",
-                "Oscilador Amortiguado (2×2, S = 400)",
-            ],
-        )
-        if sis_lu == "Circuito RLC (2×2, S = 1000)":
-            A_lu = np.array([[0.0, -1000.0], [1.0, -1001.0]])
-            y0_lu = np.array([10.0, 0.0])
-            h_lu = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.04, step=0.002, format="%.4f")
-            t_max_lu = 2.5
-        elif sis_lu == "Cinética Química (3×3, S = 200)":
-            A_lu = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
-            y0_lu = np.array([1.0, 0.0, 0.0])
-            h_lu = st.slider("Paso h [s]:", min_value=0.005, max_value=0.2, value=0.05, step=0.005, format="%.3f")
-            t_max_lu = 6.0
-        elif sis_lu == "Edificio Sísmico (4×4, Modos Complejos)":
-            A_lu = np.array([
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
-                [-200.0, 80.0, -10.0, 4.0],
-                [80.0, -80.0, 4.0, -4.0],
-            ])
-            y0_lu = np.array([0.1, 0.0, 0.0, 0.0])
-            h_lu = st.slider("Paso h [s]:", min_value=0.01, max_value=0.15, value=0.06, step=0.005, format="%.3f")
-            t_max_lu = 8.0
-        else:
-            A_lu = np.array([[0.0, 1.0], [-400.0, -401.0]])
-            y0_lu = np.array([2.0, 0.0])
-            h_lu = st.slider("Paso h [s]:", min_value=0.002, max_value=0.08, value=0.02, step=0.002, format="%.4f")
-            t_max_lu = 2.0
+        with st.container(border=True):
+            sis_lu = st.selectbox(
+                "Seleccionar Sistema:",
+                [
+                    "Circuito RLC (2×2, S = 1000)",
+                    "Cinética Química (3×3, S = 200)",
+                    "Edificio Sísmico (4×4, Modos Complejos)",
+                    "Oscilador Amortiguado (2×2, S = 400)",
+                ],
+            )
+            if sis_lu == "Circuito RLC (2×2, S = 1000)":
+                A_lu = np.array([[0.0, -1000.0], [1.0, -1001.0]])
+                y0_lu = np.array([10.0, 0.0])
+                h_lu = st.slider("Paso h [s]:", min_value=0.001, max_value=0.1, value=0.04, step=0.002, format="%.4f")
+                t_max_lu = 2.5
+            elif sis_lu == "Cinética Química (3×3, S = 200)":
+                A_lu = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
+                y0_lu = np.array([1.0, 0.0, 0.0])
+                h_lu = st.slider("Paso h [s]:", min_value=0.005, max_value=0.2, value=0.05, step=0.005, format="%.3f")
+                t_max_lu = 6.0
+            elif sis_lu == "Edificio Sísmico (4×4, Modos Complejos)":
+                A_lu = np.array([
+                    [0.0, 0.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 1.0],
+                    [-200.0, 80.0, -10.0, 4.0],
+                    [80.0, -80.0, 4.0, -4.0],
+                ])
+                y0_lu = np.array([0.1, 0.0, 0.0, 0.0])
+                h_lu = st.slider("Paso h [s]:", min_value=0.01, max_value=0.15, value=0.06, step=0.005, format="%.3f")
+                t_max_lu = 8.0
+            else:
+                A_lu = np.array([[0.0, 1.0], [-400.0, -401.0]])
+                y0_lu = np.array([2.0, 0.0])
+                h_lu = st.slider("Paso h [s]:", min_value=0.002, max_value=0.08, value=0.02, step=0.002, format="%.4f")
+                t_max_lu = 2.0
 
-        info_lu = descomposicion_lu_inspector(A_lu, h_lu)
-        st.markdown(f"**Determinante $\\det(M)$:** `{info_lu['det']:.3e}`")
-        st.markdown(f"**Número de condición $\\kappa_2(M)$:** `{info_lu['cond']:.2f}`")
-        st.markdown(f"**Estado:** `{info_lu['estado_condicion']}`")
-        st.markdown("</div>", unsafe_allow_html=True)
+            info_lu = descomposicion_lu_inspector(A_lu, h_lu)
+            st.markdown(f"**Determinante $\\det(M)$:** `{info_lu['det']:.3e}`")
+            st.markdown(f"**Número de condición $\\kappa_2(M)$:** `{info_lu['cond']:.2f}`")
+            st.markdown(f"**Estado:** `{info_lu['estado_condicion']}`")
 
     with col_lu_view:
         tab_mat, tab_modal = st.tabs([
@@ -1103,35 +1100,34 @@ elif vista_idx == 5:
     with tab_bm:
         c_bm1, c_bm2 = st.columns([1, 2])
         with c_bm1:
-            st.markdown('<div class="stage-card">', unsafe_allow_html=True)
-            sis_bm = st.selectbox(
-                "Sistema para Benchmark:",
-                [
-                    "Circuito RLC Rígido (S = 1000)",
-                    "Cinética Química en Cadena (S = 200)",
-                    "Oscilador Acoplado (S = 400)",
-                ],
-            )
-            if sis_bm == "Circuito RLC Rígido (S = 1000)":
-                A_bm = np.array([[0.0, -1000.0], [1.0, -1001.0]])
-                y0_bm = np.array([10.0, 0.0])
-                t_fin_bm = 3.0
-                h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.01, max_value=0.1, value=0.05, step=0.005, format="%.3f")
-            elif sis_bm == "Cinética Química en Cadena (S = 200)":
-                A_bm = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
-                y0_bm = np.array([1.0, 0.0, 0.0])
-                t_fin_bm = 6.0
-                h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.01, max_value=0.15, value=0.06, step=0.005, format="%.3f")
-            else:
-                A_bm = np.array([[0.0, 1.0], [-400.0, -401.0]])
-                y0_bm = np.array([2.0, 0.0])
-                t_fin_bm = 2.0
-                h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.005, max_value=0.06, value=0.025, step=0.005, format="%.3f")
+            with st.container(border=True):
+                sis_bm = st.selectbox(
+                    "Sistema para Benchmark:",
+                    [
+                        "Circuito RLC Rígido (S = 1000)",
+                        "Cinética Química en Cadena (S = 200)",
+                        "Oscilador Acoplado (S = 400)",
+                    ],
+                )
+                if sis_bm == "Circuito RLC Rígido (S = 1000)":
+                    A_bm = np.array([[0.0, -1000.0], [1.0, -1001.0]])
+                    y0_bm = np.array([10.0, 0.0])
+                    t_fin_bm = 3.0
+                    h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.01, max_value=0.1, value=0.05, step=0.005, format="%.3f")
+                elif sis_bm == "Cinética Química en Cadena (S = 200)":
+                    A_bm = np.array([[-0.5, 0.0, 0.0], [0.5, -100.0, 0.0], [0.0, 100.0, 0.0]])
+                    y0_bm = np.array([1.0, 0.0, 0.0])
+                    t_fin_bm = 6.0
+                    h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.01, max_value=0.15, value=0.06, step=0.005, format="%.3f")
+                else:
+                    A_bm = np.array([[0.0, 1.0], [-400.0, -401.0]])
+                    y0_bm = np.array([2.0, 0.0])
+                    t_fin_bm = 2.0
+                    h_bm = st.slider("Paso para Euler Implícito [s]:", min_value=0.005, max_value=0.06, value=0.025, step=0.005, format="%.3f")
 
-            res_bm = benchmark_rendimiento_comparativo(A_bm, y0_bm, (0.0, t_fin_bm), h_bm)
-            st.markdown(f"**Paso Implícito:** `{res_bm['h_impl']:.4f} s`")
-            st.markdown(f"**Paso Explícito Estable:** `{res_bm['h_expl_estable']:.4e} s`")
-            st.markdown("</div>", unsafe_allow_html=True)
+                res_bm = benchmark_rendimiento_comparativo(A_bm, y0_bm, (0.0, t_fin_bm), h_bm)
+                st.markdown(f"**Paso Implícito:** `{res_bm['h_impl']:.4f} s`")
+                st.markdown(f"**Paso Explícito Estable:** `{res_bm['h_expl_estable']:.4e} s`")
 
         with c_bm2:
             render_kpis([
