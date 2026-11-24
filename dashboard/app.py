@@ -181,7 +181,6 @@ SECCIONES = [
     (":material/table_view:", "Inspector LU", "Inspector LU y Descomposición"),
     (":material/bolt:", "Casos Físicos", "Casos de Estudio Físicos"),
     (":material/speed:", "Benchmark", "Benchmark y Convergencia O(h)"),
-    (":material/record_voice_over:", "Modo Exposición", "Modo Exposición · Guía del Orador"),
     (":material/photo_library:", "Galería e Informe", "Galería e Informe PDF"),
 ]
 
@@ -1203,128 +1202,9 @@ elif vista_idx == 5:
 
 
 # =============================================================================
-# VISTA 6: Modo Exposición · Guía del Orador (Grupo 3)
+# VISTA 6: Galería e Informe PDF
 # =============================================================================
 elif vista_idx == 6:
-    st.markdown(
-        r"""
-        <h1>Modo Exposición · Guía del Orador (Grupo 3)</h1>
-        <p class="q-subtitle">
-            Estructura optimizada para la defensa ante el docente y jurado. Incluye guion cronológico diapositiva por
-            diapositiva, demostraciones preparadas y respuestas matemáticas a preguntas difíciles.
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    tab_guion, tab_qa, tab_retos = st.tabs([
-        ":material/slideshow: Guion de Exposición (6 Diapositivas Clave)",
-        ":material/help_center: Banco de Preguntas Difíciles del Jurado",
-        ":material/quiz: Desafío Interactivo para la Clase",
-    ])
-
-    with tab_guion:
-        st.markdown(
-            r"""
-            <div class="speaker-card">
-                <h4>Diapositiva 1: El Problema — ¿Qué es la Rigidez y por qué colapsan los métodos clásicos?</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"En sistemas físicos reales como circuitos o química, conviven fenómenos ultrarrápidos (milisegundos) y lentos (segundos). Los métodos explícitos como Euler Explícito o RK4 quedan prisioneros del fenómeno rápido y se ven forzados a dar pasos microscópicos para no explotar."</i><br>
-                    <b>Qué mostrar en el dashboard:</b> Ir a la pestaña <b>Estabilidad · La Carrera</b> y poner $z = 2.4$. Mostrar cómo la curva explícita empieza a oscilar salvajemente mientras que la implícita sigue la física real.
-                </p>
-            </div>
-            <div class="speaker-card">
-                <h4>Diapositiva 2: La Idea Matemática — Mirar hacia adelante (Backward Euler)</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"En lugar de calcular la pendiente en el presente $t_k$, Euler Implícito evalúa la derivada en el destino futuro $t_{k+1}$. Esto transforma la ecuación en un sistema lineal $(I - hA)\mathbf{y}_{k+1} = \mathbf{y}_k + h\mathbf{g}$. Su función de estabilidad $R(z) = 1/(1-z)$ es A-estable y L-estable en todo el semiplano izquierdo."</i><br>
-                    <b>Qué mostrar en el dashboard:</b> Pestaña <b>Inicio</b>, animación Manim mostrando cómo el término $hA$ pasa al lado izquierdo.
-                </p>
-            </div>
-            <div class="speaker-card">
-                <h4>Diapositiva 3: El Secreto Computacional — Factorización LU Precomputada O(n²)</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"El argumento contra los métodos implícitos siempre fue el costo de resolver sistemas lineales. En nuestro proyecto demostramos que, si $A$ y $h$ son constantes, factorizamos $PM = LU$ una sola vez al inicio en $O(n^3)$ y cada paso temporal se resuelve en $O(n^2)$ por sustituciones directas, haciendo el método ultraeficiente."</i><br>
-                    <b>Qué mostrar en el dashboard:</b> Pestaña <b>Inspector LU</b> mostrando las matrices $L$ y $U$ calculadas en vivo y el número de condición.
-                </p>
-            </div>
-            <div class="speaker-card">
-                <h4>Diapositiva 4: Casos Físicos de Aplicación Real</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"Probamos el método en 3 sistemas reales: Circuito RLC (rigidez $S=1000$), Cinética química (conservación estricta de masa) y Edificio sísmico de 2 pisos (forzamiento no homogéneo y balance energético)."</i><br>
-                    <b>Qué mostrar en el dashboard:</b> Pestaña <b>Casos Físicos</b>, reproducir el osciloscopio en el RLC y el balance energético en el sismo.
-                </p>
-            </div>
-            <div class="speaker-card">
-                <h4>Diapositiva 5: Rendimiento Computacional y Speedup</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"Euler Explícito necesita más de 1,500 pasos para no divergir en el circuito RLC. Euler Implícito resuelve la misma física con solo 60 pasos, logrando un ahorro de más del 95% del esfuerzo computacional."</i><br>
-                    <b>Qué mostrar en el dashboard:</b> Pestaña <b>Benchmark</b> mostrando las barras de pasos y el factor de Speedup.
-                </p>
-            </div>
-            <div class="speaker-card">
-                <h4>Diapositiva 6: Conclusiones</h4>
-                <p>
-                    <b>Punto central a decir:</b> <i>"Verificamos experimentalmente que el método converge con orden $O(h)$ mediante la Tabla de Richardson ($p \to 1.00$). Para sistemas rígidos, la estabilidad incondicional y la L-estabilidad superan con creces el orden de los métodos explícitos."</i>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with tab_qa:
-        with st.expander("Pregunta 1: ¿Por qué no usar simplemente Runge-Kutta 4 explícito (RK4)?", expanded=True):
-            st.markdown(
-                r"""
-                **Respuesta técnica para el jurado:**
-                RK4 es de orden 4, pero **sigue siendo explícito**. Su región de estabilidad en el eje real negativo solo llega hasta $-2.78$.
-                En un sistema rígido como nuestro RLC ($\lambda = -1000$), RK4 exige $h \le 2.78 / 1000 = 0.00278$ s.
-                Si usamos $h = 0.05$ s, RK4 explota igual que Euler Explícito. El orden alto no compensa la falta de A-estabilidad.
-                """
-            )
-        with st.expander("Pregunta 2: Crank-Nicolson es de orden 2, ¿por qué Euler Implícito (orden 1) es preferible en rigidez extrema?"):
-            st.markdown(
-                r"""
-                **Respuesta técnica para el jurado:**
-                Crank-Nicolson es A-estable, pero **no es L-estable** porque $\lim_{z \to -\infty} R(z) = -1$.
-                Para pasos grandes frente a la escala rápida, Crank-Nicolson genera oscilaciones espurias de signo alternante que nunca mueren.
-                Euler Implícito cumple $\lim_{z \to -\infty} R(z) = 0$ (L-estabilidad), absorbiendo y amortiguando los transitorios al instante.
-                """
-            )
-        with st.expander("Pregunta 3: ¿Qué pasa si el paso h cambia de forma adaptativa?"):
-            st.markdown(
-                r"""
-                **Respuesta técnica para el jurado:**
-                Si $h$ cambia, la matriz $M = (I - hA)$ cambia y hay que recalcular su factorización LU ($O(n^3)$).
-                Sin embargo, en la práctica se usan estrategias por bloques: se mantiene $h$ constante durante decenas de pasos y solo se refactoriza
-                cuando el controlador de error adaptativo detecta que es estrictamente necesario cambiar $h$.
-                """
-            )
-        with st.expander("Pregunta 4: ¿Cómo afecta el número de condición κ(I - hA) a la solución?"):
-            st.markdown(
-                r"""
-                **Respuesta técnica para el jurado:**
-                El número de condición mide la sensibilidad de la solución ante perturbaciones. Dado que $A$ tiene valores propios negativos,
-                los valores propios de $M = I - hA$ son $1 - h\lambda_i \ge 1$. Por ende, la matriz $M$ es estrictamente no singular y su
-                condicionamiento se mantiene controlado para todo $h > 0$.
-                """
-            )
-
-    with tab_retos:
-        st.markdown("### Reto Interactivo: Predice el comportamiento")
-        st.markdown("Plantea este desafío a la clase o docente antes de mostrar el resultado:")
-        st.info("Sistema RLC: R = 1001 Ω, L = 1 H, C = 1 mF (λ₁ = -1, λ₂ = -1000). ¿Qué ocurre si fijamos h = 0.003 s?")
-        if st.button("Revelar Resultado del Reto", icon=":material/visibility:"):
-            st.success(
-                "Resultado: Como h_crítico para Euler Explícito es 2 / 1000 = 0.002 s, con h = 0.003 s el explícito diverge "
-                "con factor |1 - 0.003*1000| = |-2| = 2 > 1. ¡Cada paso duplica el error y explota! En cambio, Euler Implícito "
-                "avanza con factor |1 / (1 + 3)| = 0.25 < 1 y produce una solución perfectamente amortiguada."
-            )
-
-
-# =============================================================================
-# VISTA 7: Galería e Informe PDF
-# =============================================================================
-elif vista_idx == 7:
     st.markdown(
         """
         <h1>Galería de Figuras e Informe Académico</h1>
