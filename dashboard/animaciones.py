@@ -637,15 +637,21 @@ const playBtn = document.getElementById('playBtn'), rstBtn = document.getElement
 
 let prog = 0, playing = true, lastTs = 0;
 const tMax = D.t[D.t.length - 1];
-const maxAbs = Math.max(0.25, ...D.x2.map(Math.abs));
+let maxAbs = 0.25;
+for(let i = 0; i < D.x2.length; i++){
+  const v = Math.abs(D.x2[i]);
+  if(v > maxAbs) maxAbs = v;
+}
 
 function interp(arr, t){
+  if(!arr || arr.length === 0) return 0;
   if(t <= D.t[0]) return arr[0];
   if(t >= tMax) return arr[arr.length-1];
-  for(let i=0; i<D.t.length-1; i++){
+  for(let i = 0; i < D.t.length - 1; i++){
     if(t >= D.t[i] && t <= D.t[i+1]){
-      const u = (t - D.t[i])/(D.t[i+1]-D.t[i]);
-      return arr[i] + u*(arr[i+1]-arr[i]);
+      const dt = D.t[i+1] - D.t[i];
+      const u = dt > 0 ? (t - D.t[i]) / dt : 0;
+      return arr[i] + u * (arr[i+1] - arr[i]);
     }
   }
   return arr[arr.length-1];
@@ -666,9 +672,13 @@ function draw(){
   const cx = 161, baseY = 300, hFloor = 95, slabW = 110, scale = 190;
   const dx1 = x1 * scale, dx2 = x2 * scale;
 
-  // Suelo
+  // Suelo y cimientos
   ctx.strokeStyle = '#64748b'; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.moveTo(45, baseY); ctx.lineTo(275, baseY); ctx.stroke();
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5;
+  for(let hx = 55; hx <= 265; hx += 18){
+    ctx.beginPath(); ctx.moveTo(hx, baseY); ctx.lineTo(hx - 10, baseY + 12); ctx.stroke();
+  }
 
   // Columnas flexibles
   ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3.5;
@@ -712,9 +722,20 @@ function draw(){
   function trace(arr, col){
     ctx.strokeStyle = col; ctx.lineWidth = 2.5;
     ctx.beginPath();
-    D.t.forEach((t,i)=>{ if(t<=tCur){ const x=mapX(t), y=mapY(arr[i]); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+    let started = false;
+    for(let i = 0; i < D.t.length; i++){
+      if(D.t[i] <= tCur){
+        const x = mapX(D.t[i]), y = mapY(arr[i]);
+        if(!started){ ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+    }
     const curV = interp(arr, tCur);
-    ctx.lineTo(mapX(tCur), mapY(curV));
+    if(!started){
+      ctx.moveTo(mapX(tCur), mapY(curV));
+    } else {
+      ctx.lineTo(mapX(tCur), mapY(curV));
+    }
     ctx.stroke();
     ctx.fillStyle = col;
     ctx.beginPath(); ctx.arc(mapX(tCur), mapY(curV), 5, 0, Math.PI*2); ctx.fill();

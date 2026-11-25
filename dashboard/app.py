@@ -287,7 +287,7 @@ if vista_idx == 0:
             <h2 style="margin-top:0;">¿Qué resuelve este proyecto y por qué es fundamental?</h2>
             <p class="q-subtitle" style="margin-bottom:0.8rem;">
                 En ingeniería electrónica, cinéticas químicas, dinámica estructural y simulación física, los fenómenos acoplados
-                se modelan mediante sistemas lineales: $\mathbf{y}'(t) = A\mathbf{y}(t) + \mathbf{g}(t)$.
+                se modelan mediante sistemas lineales: <b>y</b>'(<i>t</i>) = <i>A</i><b>y</b>(<i>t</i>) + <b>g</b>(<i>t</i>).
                 El desafío insalvable para los métodos clásicos aparece cuando el sistema es <b>rígido (stiff)</b>.
             </p>
             <div class="info-grid">
@@ -297,32 +297,39 @@ if vista_idx == 0:
                     <p>
                         Coexisten modos dinámicos <b>ultrarrápidos</b> (que decaen en microsegundos) con modos <b>lentos</b>
                         (que evolucionan en segundos u horas). La razón de rigidez se define como:
-                        $$S = \frac{\max_i |\text{Re}(\lambda_i)|}{\min_i |\text{Re}(\lambda_i)|} \gg 1$$
                     </p>
+                    <div style="text-align:center; margin: 10px 0; font-family: 'Fraunces', Georgia, serif; font-size: 1.15rem; color: #f1ead8;">
+                        <i>S</i> = 
+                        <span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 6px; font-size:0.92rem;">
+                            <span style="border-bottom:1.5px solid #f1ead8; padding-bottom:2px;">max<sub><i>i</i></sub> |Re(&lambda;<sub><i>i</i></sub>)|</span>
+                            <span style="padding-top:2px;">min<sub><i>i</i></sub> |Re(&lambda;<sub><i>i</i></sub>)|</span>
+                        </span>
+                        &gg; 1
+                    </div>
                 </div>
                 <div class="info-card">
                     <span class="badge-pill badge-coral">El Cuello de Botella</span>
                     <h4>¿Por qué falla Euler Explícito?</h4>
                     <p>
                         Aunque la solución física esté casi quieta y suave, el método explícito queda esclavizado por el modo más rápido:
-                        si $h > 2 / |\lambda_{\max}|$, cada paso amplifica el error y la simulación explota hacia $\pm \infty$.
+                        si <i>h</i> &gt; 2 / |&lambda;<sub>max</sub>|, cada paso amplifica el error y la simulación explota hacia &plusmn;&infin;.
                     </p>
                 </div>
                 <div class="info-card">
                     <span class="badge-pill badge-emerald">Freno Automático</span>
                     <h4>El Poder de Mirar al Futuro</h4>
                     <p>
-                        Euler Implícito evalúa la derivada en el instante futuro $t_{k+1}$. Esto genera el sistema lineal
-                        $(I - hA)\mathbf{y}_{k+1} = \mathbf{y}_k + h\mathbf{g}(t_{k+1})$, cuya función de estabilidad es
-                        $R(z) = 1/(1-z)$. Es <b>A-estable</b> y <b>L-estable</b> en todo el semiplano izquierdo.
+                        Euler Implícito evalúa la derivada en el instante futuro <i>t</i><sub><i>k</i>+1</sub>. Esto genera el sistema lineal
+                        (<i>I</i> &minus; <i>hA</i>)<b>y</b><sub><i>k</i>+1</sub> = <b>y</b><sub><i>k</i></sub> + <i>h</i><b>g</b>(<i>t</i><sub><i>k</i>+1</sub>), cuya función de estabilidad es
+                        <i>R</i>(<i>z</i>) = 1 / (1 &minus; <i>z</i>). Es <b>A-estable</b> y <b>L-estable</b> en todo el semiplano izquierdo.
                     </p>
                 </div>
                 <div class="info-card">
                     <span class="badge-pill badge-cyan">Eficiencia Computacional</span>
                     <h4>Precomputación LU O(n²)</h4>
                     <p>
-                        Cuando $A$ y $h$ son constantes, la matriz $M = (I - hA)$ nunca se reinvierte paso a paso. Se factoriza
-                        como $PM = LU$ una sola vez al inicio ($O(n^3)$), y cada paso de integración se resuelve en $O(n^2)$
+                        Cuando <i>A</i> y <i>h</i> son constantes, la matriz <i>M</i> = (<i>I</i> &minus; <i>hA</i>) nunca se reinvierte paso a paso. Se factoriza
+                        como <i>PM</i> = <i>LU</i> una sola vez al inicio (<i>O</i>(<i>n</i><sup>3</sup>)), y cada paso de integración se resuelve en <i>O</i>(<i>n</i><sup>2</sup>)
                         mediante sustitución hacia adelante y hacia atrás.
                     </p>
                 </div>
@@ -341,26 +348,26 @@ if vista_idx == 0:
                 <div style="background:#091512;border:1px solid #26413a;border-radius:14px;padding:16px;">
                     <span class="badge-pill badge-coral">Euler Explícito</span>
                     <ul style="margin:10px 0 0;padding-left:18px;color:#a3a58f;font-size:0.88rem;line-height:1.7;">
-                        <li>Orden local $O(h^2)$, global $O(h)$.</li>
-                        <li><b>Región:</b> disco $|1+z| \le 1$.</li>
-                        <li>Paso limitado por estabilidad: $h \le 2/|\lambda_{\max}|$.</li>
-                        <li>En sistemas rígidos requiere millones de pasos o diverge.</li>
+                        <li>Orden local <i>O</i>(<i>h</i><sup>2</sup>), global <i>O</i>(<i>h</i>).</li>
+                        <li><b>Región:</b> disco |1 + <i>z</i>| &le; 1.</li>
+                        <li>Paso limitado por estabilidad: <i>h</i> &le; 2 / |&lambda;<sub>max</sub>|.</li>
+                        <li>En sistemas rígidos requiere millones de pasos o diverge a &plusmn;&infin;.</li>
                     </ul>
                 </div>
                 <div style="background:#091512;border:1px solid #a78bfa;border-radius:14px;padding:16px;">
                     <span class="badge-pill" style="background:rgba(167,139,250,0.18);color:#a78bfa;border:1px solid rgba(167,139,250,0.4);">Crank-Nicolson (Trapecio)</span>
                     <ul style="margin:10px 0 0;padding-left:18px;color:#cbd5e1;font-size:0.88rem;line-height:1.7;">
-                        <li>Orden local $O(h^3)$, global $O(h^2)$.</li>
-                        <li><b>A-estable:</b> $|R(z)| \le 1$ en $\text{Re}(z) \le 0$.</li>
-                        <li><b>NO L-estable:</b> $|R(-\infty)| = 1$.</li>
+                        <li>Orden local <i>O</i>(<i>h</i><sup>3</sup>), global <i>O</i>(<i>h</i><sup>2</sup>).</li>
+                        <li><b>A-estable:</b> |<i>R</i>(<i>z</i>)| &le; 1 en Re(<i>z</i>) &le; 0.</li>
+                        <li><b>NO L-estable:</b> |<i>R</i>(&minus;&infin;)| = 1.</li>
                         <li>Genera oscilaciones espurias persistentes con pasos grandes.</li>
                     </ul>
                 </div>
                 <div style="background:#091512;border:1px solid #3ecf9f;border-radius:14px;padding:16px;">
                     <span class="badge-pill badge-stable">Euler Implícito (LU)</span>
                     <ul style="margin:10px 0 0;padding-left:18px;color:#f1ead8;font-size:0.88rem;line-height:1.7;">
-                        <li>Orden global $O(h)$, precomputación $LU$.</li>
-                        <li><b>A-estable y L-estable:</b> $|R(-\infty)| = 0$.</li>
+                        <li>Orden global <i>O</i>(<i>h</i>), precomputación <i>LU</i>.</li>
+                        <li><b>A-estable y L-estable:</b> |<i>R</i>(&minus;&infin;)| = 0.</li>
                         <li>Amortigua modos rápidos al instante sin oscilar.</li>
                         <li>Permite pasos <b>20× a 100× más grandes</b>, ahorrando hasta 95% de cómputo.</li>
                     </ul>
@@ -380,7 +387,7 @@ elif vista_idx == 1:
         r"""
         <h1>Plano de estabilidad y comparación de esquemas</h1>
         <p class="q-subtitle">
-            Explora interactivamente cómo $z = h\lambda$ entra o sale de las regiones de estabilidad de Euler Explícito,
+            Explora interactivamente cómo <i>z</i> = <i>h</i>&lambda; entra o sale de las regiones de estabilidad de Euler Explícito,
             Crank-Nicolson y Euler Implícito, y comprueba por qué la L-estabilidad es vital.
         </p>
         """,
@@ -519,10 +526,10 @@ elif vista_idx == 1:
                 <div class="speaker-card" style="margin-top:0;">
                     <h4>¿Por qué Euler Implícito y no Crank-Nicolson?</h4>
                     <p>
-                        <b>Crank-Nicolson (Trapecio)</b> tiene orden 2 ($O(h^2)$) y es A-estable. Sin embargo, <b>NO es L-estable</b>:
-                        su factor de amplificación satisface $\lim_{z \to -\infty} R(z) = -1$.
+                        <b>Crank-Nicolson (Trapecio)</b> tiene orden 2 (<i>O</i>(<i>h</i><sup>2</sup>)) y es A-estable. Sin embargo, <b>NO es L-estable</b>:
+                        su factor de amplificación satisface lim<sub><i>z</i> &to; &minus;&infin;</sub> <i>R</i>(<i>z</i>) = &minus;1.
                         Ante pasos grandes, no amortigua los transitorios rápidos, sino que los hace <b>oscilar indefinidamente con signo alternante</b>.
-                        <b>Euler Implícito</b>, al ser L-estable ($\lim R(z) = 0$), absorbe y apaga los modos rígidos de inmediato.
+                        <b>Euler Implícito</b>, al ser L-estable (lim<sub><i>z</i> &to; &minus;&infin;</sub> <i>R</i>(<i>z</i>) = 0), absorbe y apaga los modos rígidos de inmediato.
                     </p>
                 </div>
                 """,
@@ -557,7 +564,7 @@ elif vista_idx == 2:
         r"""
         <h1>Sandbox Libre N×N (Laboratorio Matricial)</h1>
         <p class="q-subtitle">
-            Experimenta con cualquier sistema lineal arbitrario $\mathbf{y}' = A\mathbf{y}$. Modifica coeficientes,
+            Experimenta con cualquier sistema lineal arbitrario <b>y</b>' = <i>A</i><b>y</b>. Modifica coeficientes,
             condiciones iniciales o carga sistemas rígidos históricos de la literatura científica.
         </p>
         """,
@@ -717,8 +724,8 @@ elif vista_idx == 3:
         r"""
         <h1>Inspector LU y Descomposición Modal</h1>
         <p class="q-subtitle">
-            Abre la caja negra del álgebra lineal numérica. Inspecciona las matrices $M = I - hA$, sus factores $P, L, U$,
-            el número de condición espectral $\kappa(M)$ y la descomposición modal que origina la rigidez.
+            Abre la caja negra del álgebra lineal numérica. Inspecciona las matrices <i>M</i> = <i>I</i> &minus; <i>hA</i>, sus factores <i>P</i>, <i>L</i>, <i>U</i>,
+            el número de condición espectral &kappa;(<i>M</i>) y la descomposición modal que origina la rigidez.
         </p>
         """,
         unsafe_allow_html=True,
@@ -780,10 +787,10 @@ elif vista_idx == 3:
                 <div class="speaker-card" style="margin-top:0;">
                     <h4>Optimización Algorítmica con Factorización LU</h4>
                     <p>
-                        Para dar $N$ pasos con matriz e intervalo constantes, invertir $(I - hA)$ explícitamente en cada paso
-                        costaría $O(N \cdot n^3)$. Con <code>scipy.linalg.lu_factor</code> se precomputa $PM = LU$ una sola vez
-                        con costo inicial $O(n^3)$, y luego cada paso temporal se resuelve mediante dos sustituciones triangulares
-                        con costo $O(n^2)$.
+                        Para dar <i>N</i> pasos con matriz e intervalo constantes, invertir (<i>I</i> &minus; <i>hA</i>) explícitamente en cada paso
+                        costaría <i>O</i>(<i>N</i> &middot; <i>n</i><sup>3</sup>). Con <code>scipy.linalg.lu_factor</code> se precomputa <i>PM</i> = <i>LU</i> una sola vez
+                        con costo inicial <i>O</i>(<i>n</i><sup>3</sup>), y luego cada paso temporal se resuelve mediante dos sustituciones triangulares
+                        con costo <i>O</i>(<i>n</i><sup>2</sup>).
                     </p>
                 </div>
                 """,
@@ -1075,7 +1082,7 @@ elif vista_idx == 4:
         ])
 
         with t1:
-            components.html(html_animacion_edificio(t_b_imp, y_b_imp, y_b_ref), height=445, scrolling=False)
+            components.html(html_animacion_edificio(t_b_imp, y_b_imp, y_b_ref), height=460, scrolling=False)
 
         with t2:
             fig_e = make_subplots(rows=1, cols=2, subplot_titles=("Piso 2 x2(t)", "Piso 1 x1(t)"))
@@ -1121,7 +1128,7 @@ elif vista_idx == 5:
         <h1>Benchmark de Cómputo y Convergencia Numérica</h1>
         <p class="q-subtitle">
             Demostración cuantitativa: evalúa el factor de aceleración real (Speedup de CPU y pasos) y verifica
-            empíricamente el orden teórico de convergencia $O(h)$ mediante la Tabla de Richardson.
+            empíricamente el orden teórico de convergencia <i>O</i>(<i>h</i>) mediante la Tabla de Richardson.
         </p>
         """,
         unsafe_allow_html=True,
@@ -1191,10 +1198,18 @@ elif vista_idx == 5:
             <div class="speaker-card" style="margin-top:0;">
                 <h4>Verificación Rigurosa del Orden Teórico O(h)</h4>
                 <p>
-                    El orden de convergencia experimental $p$ se calcula comparando el error global entre pasos sucesivos
+                    El orden de convergencia experimental <i>p</i> se calcula comparando el error global entre pasos sucesivos
                     mediante la relación:
-                    $$p = \frac{\ln(E_{h_{k-1}} / E_{h_k})}{\ln(h_{k-1} / h_k)}$$
-                    A medida que $h \to 0$, $p$ converge exactamente a <b>1.00</b>, confirmando la validez teórica del esquema.
+                </p>
+                <div style="text-align:center; margin: 10px 0; font-family: 'Fraunces', Georgia, serif; font-size: 1.15rem; color: #f1ead8;">
+                    <i>p</i> = 
+                    <span style="display:inline-flex; flex-direction:column; vertical-align:middle; text-align:center; margin:0 6px; font-size:0.92rem;">
+                        <span style="border-bottom:1.5px solid #f1ead8; padding-bottom:2px;">ln(<i>E</i><sub><i>h</i><sub><i>k</i>&minus;1</sub></sub> / <i>E</i><sub><i>h</i><sub><i>k</i></sub></sub>)</span>
+                        <span style="padding-top:2px;">ln(<i>h</i><sub><i>k</i>&minus;1</sub> / <i>h</i><sub><i>k</i></sub>)</span>
+                    </span>
+                </div>
+                <p>
+                    A medida que <i>h</i> &to; 0, <i>p</i> converge exactamente a <b>1.00</b>, confirmando la validez teórica del esquema.
                 </p>
             </div>
             """,
