@@ -84,8 +84,32 @@ if css_file.exists():
 # -----------------------------------------------------------------------------
 # Utilidades visuales
 # -----------------------------------------------------------------------------
-def aplicar_estilo_plotly(fig: go.Figure, titulo: str = "", height: int = 430) -> go.Figure:
-    """Aplica la estética oscura de EulerLab a figuras Plotly."""
+PLOTLY_CONFIG = {
+    "scrollZoom": False,  # Desactiva el zoom con la rueda del ratón/touchpad para evitar que los datos se muevan
+    "displaylogo": False,
+    "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+    "responsive": True,
+    "doubleClick": "reset",
+}
+
+
+def mostrar_grafico_plotly(fig: go.Figure, key: str | None = None) -> None:
+    """Renderiza una gráfica Plotly de forma estable sin saltos de datos ni zoom accidental."""
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        config=PLOTLY_CONFIG,
+        key=key,
+    )
+
+
+def aplicar_estilo_plotly(
+    fig: go.Figure,
+    titulo: str = "",
+    height: int = 430,
+    hovermode: str = "x unified",
+) -> go.Figure:
+    """Aplica la estética oscura de EulerLab a figuras Plotly con datos y tooltips estables."""
     fig.update_layout(
         title=dict(
             text=f"<b>{titulo}</b>" if titulo else "",
@@ -98,23 +122,15 @@ def aplicar_estilo_plotly(fig: go.Figure, titulo: str = "", height: int = 430) -
         font=dict(family="DM Sans, sans-serif", color=TEXT_CRISP, size=11.5),
         height=height,
         margin=dict(l=45, r=25, t=52, b=45),
+        hovermode=hovermode,
+        hoverdistance=15,
+        spikedistance=15,
+        uirevision="constant",
         legend=dict(
             bgcolor="rgba(21, 40, 35, 0.9)",
             bordercolor=BORDER_COLOR,
             borderwidth=1,
             font=dict(size=10.5, color=TEXT_CRISP),
-        ),
-        xaxis=dict(
-            gridcolor="#1c332d",
-            zerolinecolor=BORDER_COLOR,
-            tickfont=dict(family="JetBrains Mono", size=10, color=TEXT_MUTED),
-            title_font=dict(size=11.5, color=TEXT_CRISP),
-        ),
-        yaxis=dict(
-            gridcolor="#1c332d",
-            zerolinecolor=BORDER_COLOR,
-            tickfont=dict(family="JetBrains Mono", size=10, color=TEXT_MUTED),
-            title_font=dict(size=11.5, color=TEXT_CRISP),
         ),
         hoverlabel=dict(
             bgcolor=PANEL_COLOR,
@@ -122,6 +138,23 @@ def aplicar_estilo_plotly(fig: go.Figure, titulo: str = "", height: int = 430) -
             font_size=11,
             bordercolor=AMBER,
         ),
+    )
+    fig.update_xaxes(
+        gridcolor="#1c332d",
+        zerolinecolor=BORDER_COLOR,
+        tickfont=dict(family="JetBrains Mono", size=10, color=TEXT_MUTED),
+        title_font=dict(size=11.5, color=TEXT_CRISP),
+        showspikes=(hovermode in ["x", "x unified"]),
+        spikethickness=1,
+        spikedash="dot",
+        spikecolor="rgba(62, 207, 159, 0.35)",
+        spikemode="across",
+    )
+    fig.update_yaxes(
+        gridcolor="#1c332d",
+        zerolinecolor=BORDER_COLOR,
+        tickfont=dict(family="JetBrains Mono", size=10, color=TEXT_MUTED),
+        title_font=dict(size=11.5, color=TEXT_CRISP),
     )
     return fig
 
@@ -458,8 +491,8 @@ elif vista_idx == 1:
             max_y = max(2.2, max(np.abs(im_z)) * 1.3)
             fig_z.update_xaxes(title_text="Re(z) = h·Re(λ)", range=[min_x, 2.3])
             fig_z.update_yaxes(title_text="Im(z) = h·Im(λ)", range=[-max_y, max_y])
-            aplicar_estilo_plotly(fig_z, titulo="Regiones de Estabilidad en el Plano Complejo", height=440)
-            st.plotly_chart(fig_z, use_container_width=True)
+            aplicar_estilo_plotly(fig_z, titulo="Regiones de Estabilidad en el Plano Complejo", height=440, hovermode="closest")
+            mostrar_grafico_plotly(fig_z)
 
         with tab_race:
             z_race = st.slider("Paso adimensional z = h·|λ| en la carrera:", min_value=0.2, max_value=4.0, value=2.4, step=0.1)
@@ -477,8 +510,8 @@ elif vista_idx == 1:
             fig_r.add_trace(go.Scatter(x=t_r_exp[mask_re], y=y_r_exp[mask_re, 0], mode="lines+markers", line=dict(color=CORAL, width=2.0, dash="dash"), marker=dict(size=7), name="Euler Explícito"))
             fig_r.update_xaxes(title_text="Tiempo adimensional t")
             fig_r.update_yaxes(title_text="y(t)", range=[-3.0, 2.5])
-            aplicar_estilo_plotly(fig_r, titulo=f"La Carrera: z = {z_race:.1f} ({'Explícito oscila y crece' if z_race > 2 else 'Ambos estables'})", height=440)
-            st.plotly_chart(fig_r, use_container_width=True)
+            aplicar_estilo_plotly(fig_r, titulo=f"La Carrera: z = {z_race:.1f} ({'Explícito oscila y crece' if z_race > 2 else 'Ambos estables'})", height=440, hovermode="x unified")
+            mostrar_grafico_plotly(fig_r)
 
         with tab_cn:
             st.markdown(
@@ -512,8 +545,8 @@ elif vista_idx == 1:
             fig_cn.add_trace(go.Scatter(x=t_eval_cn, y=y_eval_cn[:, 0], mode="lines+markers", line=dict(color=PURPLE, width=2.2, dash="dash"), marker=dict(size=7), name="Crank-Nicolson (Oscilación espuria |R|≈1)"))
             fig_cn.update_xaxes(title_text="Tiempo t [s]")
             fig_cn.update_yaxes(title_text="y(t)")
-            aplicar_estilo_plotly(fig_cn, titulo=f"Efecto de la L-Estabilidad con h = {h_cn_eval:.3f} s (z = -{z_cn:.0f})", height=420)
-            st.plotly_chart(fig_cn, use_container_width=True)
+            aplicar_estilo_plotly(fig_cn, titulo=f"Efecto de la L-Estabilidad con h = {h_cn_eval:.3f} s (z = -{z_cn:.0f})", height=420, hovermode="x unified")
+            mostrar_grafico_plotly(fig_cn)
 
 
 # =============================================================================
@@ -664,8 +697,8 @@ elif vista_idx == 2:
 
         fig_sb.update_xaxes(title_text="Tiempo t [s]")
         fig_sb.update_yaxes(title_text="Variables de estado y_i(t)")
-        aplicar_estilo_plotly(fig_sb, titulo="Simulación en el Sandbox Libre", height=420)
-        st.plotly_chart(fig_sb, use_container_width=True)
+        aplicar_estilo_plotly(fig_sb, titulo="Simulación en el Sandbox Libre", height=420, hovermode="x unified")
+        mostrar_grafico_plotly(fig_sb)
 
         # Exportación CSV del sandbox
         df_sb = pd.DataFrame({"t": t_sb_imp})
@@ -800,8 +833,8 @@ elif vista_idx == 3:
 
             fig_mod.update_xaxes(title_text="Tiempo t [s]")
             fig_mod.update_yaxes(title_text="Magnitud del modo ||c_j·e^(λ_j·t)·v_j||")
-            aplicar_estilo_plotly(fig_mod, titulo="Descomposición Modal: El Transitorio Rápido se Extingue al Inicio", height=420)
-            st.plotly_chart(fig_mod, use_container_width=True)
+            aplicar_estilo_plotly(fig_mod, titulo="Descomposición Modal: El Transitorio Rápido se Extingue al Inicio", height=420, hovermode="x unified")
+            mostrar_grafico_plotly(fig_mod)
 
             st.info(
                 f"Modo ultrarrápido dominante: λ = {modal_data['eigenvalores'][modal_data['idx_rapido']].real:.1f}. "
@@ -884,8 +917,9 @@ elif vista_idx == 4:
             fig.add_trace(go.Scatter(x=t_imp, y=y_imp[:, 1], mode="lines+markers", line=dict(color=EMERALD, width=2.0), marker=dict(size=4), showlegend=False), row=1, col=2)
             mask_exp = ~np.isnan(y_exp[:, 0])
             fig.add_trace(go.Scatter(x=t_exp[mask_exp], y=y_exp[mask_exp, 0], line=dict(color=CORAL, width=1.6, dash="dash"), name="Euler Explícito"), row=1, col=1)
-            aplicar_estilo_plotly(fig, titulo="Simulación Temporal del Circuito RLC", height=430)
-            st.plotly_chart(fig, use_container_width=True)
+            aplicar_estilo_plotly(fig, titulo="Simulación Temporal del Circuito RLC", height=430, hovermode="x")
+            fig.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across")
+            mostrar_grafico_plotly(fig)
 
         with t3:
             fig_p = go.Figure()
@@ -893,8 +927,8 @@ elif vista_idx == 4:
             fig_p.add_trace(go.Scatter(x=y_imp[:, 0], y=y_imp[:, 1], mode="lines+markers", line=dict(color=EMERALD, width=2.0), marker=dict(size=5), name="Euler Implícito"))
             fig_p.update_xaxes(title_text="V_C [V]")
             fig_p.update_yaxes(title_text="I [A]")
-            aplicar_estilo_plotly(fig_p, titulo="Retrato de Fase (V_C vs I)", height=430)
-            st.plotly_chart(fig_p, use_container_width=True)
+            aplicar_estilo_plotly(fig_p, titulo="Retrato de Fase (V_C vs I)", height=430, hovermode="closest")
+            mostrar_grafico_plotly(fig_p)
 
         with t4:
             conv = estudio_convergencia(A_rlc, y0_rlc, (0.0, t_fin), [0.2, 0.1, 0.05, 0.025, 0.0125])
@@ -903,8 +937,8 @@ elif vista_idx == 4:
             fig_c.add_trace(go.Scatter(x=conv["hs"], y=conv["errores_inf"][-1] * (conv["hs"] / conv["hs"][-1]), line=dict(color=AMBER, width=1.8, dash="dash"), name="Pendiente teórica O(h)"))
             fig_c.update_xaxes(type="log", title_text="Paso h [s]")
             fig_c.update_yaxes(type="log", title_text="Error ||e||_∞")
-            aplicar_estilo_plotly(fig_c, titulo="Convergencia Log-Log de Primer Orden O(h)", height=420)
-            st.plotly_chart(fig_c, use_container_width=True)
+            aplicar_estilo_plotly(fig_c, titulo="Convergencia Log-Log de Primer Orden O(h)", height=420, hovermode="x unified")
+            mostrar_grafico_plotly(fig_c)
 
         # Descarga de datos RLC
         df_rlc = pd.DataFrame({"t": t_imp, "Vc_implicito": y_imp[:, 0], "I_implicito": y_imp[:, 1], "Vc_exacta": y_ex_imp[:, 0], "I_exacta": y_ex_imp[:, 1]})
@@ -965,8 +999,9 @@ elif vista_idx == 4:
             fig_ch.add_trace(go.Scatter(x=t_fine_ch, y=y_ch_fine[:, 2], line=dict(color=EMERALD, width=2.2), name="[C] Exacta"), row=1, col=1)
             fig_ch.add_trace(go.Scatter(x=t_ch_imp[::3], y=y_ch_imp[::3, 2], mode="markers", marker=dict(color=EMERALD, size=5), name="[C] Implícito"), row=1, col=1)
             fig_ch.add_trace(go.Scatter(x=t_ch_imp, y=masa_total, line=dict(color=AMBER, width=2.4), name="Masa A+B+C"), row=1, col=2)
-            aplicar_estilo_plotly(fig_ch, titulo="Evolución Química y Conservación de Masa", height=430)
-            st.plotly_chart(fig_ch, use_container_width=True)
+            aplicar_estilo_plotly(fig_ch, titulo="Evolución Química y Conservación de Masa", height=430, hovermode="x")
+            fig_ch.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across")
+            mostrar_grafico_plotly(fig_ch)
 
         with t3:
             fig_z = go.Figure()
@@ -977,8 +1012,8 @@ elif vista_idx == 4:
             fig_z.add_trace(go.Scatter(x=t_ch_exp[me], y=y_ch_exp[me, 1] * 1e3, mode="lines+markers", line=dict(color=CORAL, width=1.6, dash="dash"), name="[B] Explícito (Negativo no físico)"))
             fig_z.update_xaxes(title_text="Tiempo t [s]")
             fig_z.update_yaxes(title_text="[B](t) [mmol/L]")
-            aplicar_estilo_plotly(fig_z, titulo="Positividad de Euler Implícito vs Oscilación Explícita", height=430)
-            st.plotly_chart(fig_z, use_container_width=True)
+            aplicar_estilo_plotly(fig_z, titulo="Positividad de Euler Implícito vs Oscilación Explícita", height=430, hovermode="x unified")
+            mostrar_grafico_plotly(fig_z)
 
         # Descarga de datos cinética
         df_chem = pd.DataFrame({"t": t_ch_imp, "A": y_ch_imp[:, 0], "B": y_ch_imp[:, 1], "C": y_ch_imp[:, 2], "Masa_Total": masa_total})
@@ -1048,8 +1083,9 @@ elif vista_idx == 4:
             fig_e.add_trace(go.Scatter(x=t_b_imp, y=y_b_imp[:, 1], mode="lines+markers", line=dict(color=EMERALD, width=1.8), marker=dict(size=4), name="Euler Implícito"), row=1, col=1)
             fig_e.add_trace(go.Scatter(x=t_b_imp, y=y_b_ref[:, 0], line=dict(color=TEXT_CRISP, width=2.2), showlegend=False), row=1, col=2)
             fig_e.add_trace(go.Scatter(x=t_b_imp, y=y_b_imp[:, 0], mode="lines+markers", line=dict(color=AMBER, width=1.8), marker=dict(size=4), name="Piso 1 Implícito"), row=1, col=2)
-            aplicar_estilo_plotly(fig_e, titulo="Respuesta Sísmica de los 2 Pisos", height=430)
-            st.plotly_chart(fig_e, use_container_width=True)
+            aplicar_estilo_plotly(fig_e, titulo="Respuesta Sísmica de los 2 Pisos", height=430, hovermode="x")
+            fig_e.update_xaxes(showspikes=True, spikethickness=1, spikedash="dot", spikemode="across")
+            mostrar_grafico_plotly(fig_e)
 
         with t3:
             fig_p = go.Figure()
@@ -1057,8 +1093,8 @@ elif vista_idx == 4:
             fig_p.add_trace(go.Scatter(x=y_b_imp[:, 1], y=y_b_imp[:, 3], line=dict(color=EMERALD, width=1.8, dash="dash"), name="Euler Implícito"))
             fig_p.update_xaxes(title_text="Desplazamiento x2 [m]")
             fig_p.update_yaxes(title_text="Velocidad v2 [m/s]")
-            aplicar_estilo_plotly(fig_p, titulo="Retrato de Fase Piso 2 (x2 vs v2)", height=430)
-            st.plotly_chart(fig_p, use_container_width=True)
+            aplicar_estilo_plotly(fig_p, titulo="Retrato de Fase Piso 2 (x2 vs v2)", height=430, hovermode="closest")
+            mostrar_grafico_plotly(fig_p)
 
         with t4:
             fig_en = go.Figure()
@@ -1068,8 +1104,8 @@ elif vista_idx == 4:
             fig_en.add_trace(go.Scatter(x=t_b_exp[me], y=e_exp[me], line=dict(color=CORAL, width=1.6), name="Energía Explícito (Inyección espuria)"))
             fig_en.update_xaxes(title_text="Tiempo t [s]")
             fig_en.update_yaxes(title_text="Energía E(t) [J]")
-            aplicar_estilo_plotly(fig_en, titulo="Balance Energético Estructural", height=430)
-            st.plotly_chart(fig_en, use_container_width=True)
+            aplicar_estilo_plotly(fig_en, titulo="Balance Energético Estructural", height=430, hovermode="x unified")
+            mostrar_grafico_plotly(fig_en)
 
         # Descarga de datos sismo
         df_bldg = pd.DataFrame({"t": t_b_imp, "x1": y_b_imp[:, 0], "x2": y_b_imp[:, 1], "v1": y_b_imp[:, 2], "v2": y_b_imp[:, 3], "E_implicito": e_imp, "E_referencia": e_ref})
@@ -1146,8 +1182,8 @@ elif vista_idx == 5:
                 textposition="auto",
             ))
             fig_bar.update_yaxes(title_text="Número total de pasos temporales N")
-            aplicar_estilo_plotly(fig_bar, titulo=f"Comparativa de Costo en Pasos (Speedup: {res_bm['speedup_pasos']:.1f}×)", height=320)
-            st.plotly_chart(fig_bar, use_container_width=True)
+            aplicar_estilo_plotly(fig_bar, titulo=f"Comparativa de Costo en Pasos (Speedup: {res_bm['speedup_pasos']:.1f}×)", height=320, hovermode="closest")
+            mostrar_grafico_plotly(fig_bar, key="fig_benchmark_bar")
 
     with tab_rich:
         st.markdown(
@@ -1197,8 +1233,8 @@ elif vista_idx == 5:
         ))
         fig_conv_log.update_xaxes(type="log", title_text="Paso temporal h [s] (Escala Logarítmica)")
         fig_conv_log.update_yaxes(type="log", title_text="Error Global ||e||_∞ (Escala Logarítmica)")
-        aplicar_estilo_plotly(fig_conv_log, titulo="Curva de Convergencia Experimental Log-Log", height=410)
-        st.plotly_chart(fig_conv_log, use_container_width=True)
+        aplicar_estilo_plotly(fig_conv_log, titulo="Curva de Convergencia Experimental Log-Log", height=410, hovermode="x unified")
+        mostrar_grafico_plotly(fig_conv_log, key="fig_conv_log_tab")
 
 
 # =============================================================================
